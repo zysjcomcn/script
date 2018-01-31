@@ -1,33 +1,38 @@
-// javaScript //console.log(window);
+// javaScript //console.log(window); // 严格模式
 ;(function(window, undefined){ 'use strict';
-var DOC = document;
-var WIN = window;
+    var DOC = document;
+    var WIN = window;
 
 // Z
     var Z = {
 
+        // zysj服务器通讯地址
         xhrHttp : '/script/_JsFace/ZYSJ.php',
 
-        LOADwrap : null,
-
+        // 弹出层
         popBasisId : 'popBasis',
         popZIndex  : 1000,
 
+        // 页内搜索 提示框
         signWrapBasisId : 'signBasis',
         signWrapZIndex : 2000,
 
+        // 图片浏览放大镜
         imgGlassesBasisId : 'imgGlassesBasis',
         imgGlassesZIndex : 3000,
 
+        // 会员信息
         cookieZc: getCookie('ZC'),
         cookieZt: getCookie('ZT'),
         cookieZn: getCookie('ZN'),
 
+        // 访问网站的设备
         setIpadMaxSize : 992,
         setMobMaxSize  : 767,
         isMob          : false,
         isIpad         : false,
 
+        // 检查浏览器参数
         checkWHT : function(){
             EDD({ o:'scroll', r:function(){
                 Z.scrollTop = Math.max(DOC.documentElement.scrollTop, DOC.body.scrollTop);
@@ -50,6 +55,7 @@ var WIN = window;
             }});
         },
 
+        // 手指 或 鼠标
         isTouch: false,
         mousedown: 'mousedown',
         mousemove: 'mousemove',
@@ -65,6 +71,7 @@ var WIN = window;
             }
         },
 
+        // api支持检查
         doFileReader: (typeof FileReader == 'undefined' ? false : true),
         doXHR : (typeof XMLHttpRequest == 'undefined' ? false : true),
         addEventListener : (!WIN.addEventListener ? false : true),
@@ -88,7 +95,12 @@ var WIN = window;
         }
     };Z.init();
 
+
 // ** LOAD **
+    /*****
+        感觉多余的LOAD
+    */
+
     // var LOAD = {
     //     setClass : null, // 显示设置项
 
@@ -201,6 +213,11 @@ var WIN = window;
         if( xhr.timeout ){ xhr.timeout = 1000; } // ie浏览器报错
         xhr.onreadystatechange = function(){ opt.onreadystatechange && opt.onreadystatechange('准备'); }
         xhr.onloadstart        = function(){ opt.onloadstart && opt.onloadstart('连接'); }
+
+        /*****
+            xhr.upload.* 在ie10中报错
+            忘了是ie几了....
+        */
         // xhr.upload.onloadstart = function(){ opt.uploadOnloadstart && opt.uploadOnloadstart('发送'); }
         // xhr.upload.onprogress  = function(e){ opt.uploadOnprogress && opt.uploadOnprogress( (e.lengthComputable && (e.loaded / e.total)*100) ); }
         // xhr.upload.onload      = function(){ opt.uploadOnload && opt.uploadOnload('发送成功'); }
@@ -208,6 +225,14 @@ var WIN = window;
         // xhr.onprogress         = function(){ opt.onprogress('等待响应'); }
         xhr.onload             = function(){
             if(  (xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 ){
+
+                /***** zysj服务器返回json
+                    {
+                        status : 0 成功; > 0 错误码
+                        data   : 默认的数据内容
+                        *      : 其他所需key
+                    }
+                */
                 var res = xhr.responseText;
                     res = JSON.parse(res);
                 if( res.status ){
