@@ -1,0 +1,2068 @@
+// javaScript //console.log(window);
+;(function(window, undefined){ 'use strict';
+var DOC = document;
+var WIN = window;
+
+// Z
+    var Z = {
+
+        xhrHttp : '/script/_JsFace/ZYSJ.php',
+
+        LOADwrap : null,
+
+        popBasisId : 'popBasis',
+        popZIndex  : 1000,
+
+        signWrapBasisId : 'signBasis',
+        signWrapZIndex : 2000,
+
+        imgGlassesBasisId : 'imgGlassesBasis',
+        imgGlassesZIndex : 3000,
+
+        cookieZc: getCookie('ZC'),
+        cookieZt: getCookie('ZT'),
+        cookieZn: getCookie('ZN'),
+
+        setIpadMaxSize : 992,
+        setMobMaxSize  : 767,
+        isMob          : false,
+        isIpad         : false,
+
+        checkWHT : function(){
+            EDD({ o:'scroll', r:function(){
+                Z.scrollTop = Math.max(DOC.documentElement.scrollTop, DOC.body.scrollTop);
+                Z.scrollHeight = Math.max(DOC.documentElement.scrollHeight, DOC.body.scrollHeight);
+            }});
+            EDD({ o:'resize', r:function(){
+
+                Z.clientHeight = Math.min(DOC.body.clientHeight, DOC.documentElement.clientHeight);
+                Z.clientWidth  = Math.min(DOC.body.clientWidth, DOC.documentElement.clientWidth);
+                Z.scrollHeight = Math.max(DOC.documentElement.scrollHeight, DOC.body.scrollHeight);
+                if( Z.setMobMaxSize > Z.clientWidth ){
+                    Z.isMob = true;
+                }
+                else if( Z.setIpadMaxSize > Z.clientWidth && Z.setMobMaxSize < Z.clientWidth ){
+                    Z.isIpad = true;
+                }
+
+                Z.maxWidth  = Z.isMob ? ( Z.clientWidth>Z.clientHeight ? Z.clientWidth*0.5  : Z.clientWidth*0.7 )  : Z.clientWidth*0.8;
+                Z.maxHeight = Z.isMob ? ( Z.clientWidth>Z.clientHeight ? Z.clientHeight*0.7 : Z.clientHeight*0.5 ) : Z.clientHeight*0.7;
+            }});
+        },
+
+        isTouch: false,
+        mousedown: 'mousedown',
+        mousemove: 'mousemove',
+        mouseup: 'mouseup',
+        mouseXY: function(e){  e = e || WIN.event; return Z.isTouch ? e.touches[0] : e; },
+        isTouchSolve: function(){
+            if( Z.isTouch ) return;
+            WIN.ontouchstart = function(){
+                Z.isTouch = true;
+                Z.mousedown = 'touchstart';
+                Z.mousemove = 'touchmove';
+                Z.mouseup = 'touchend';
+            }
+        },
+
+        doFileReader: (typeof FileReader == 'undefined' ? false : true),
+        doXHR : (typeof XMLHttpRequest == 'undefined' ? false : true),
+        addEventListener : (!WIN.addEventListener ? false : true),
+
+        // getElementById: function(){
+            // Z.wrapper = DOC.getElementById('wrapper');
+            // Z.header  = DOC.getElementById('header');
+            // Z.warning = DOC.getElementById('warning');
+            // if( !Z.isMob ){
+            // Z.sidebarFixed = DOC.getElementById('sidebarFixed');
+            // Z.sidebarFixed && (Z.sidebarFixed.fixedTop = getFixedOffsetTopLeft(Z.sidebarFixed).top);
+            // Z.editMode = DOC.getElementById('editMode');
+            // }
+        // },
+
+        //
+        init: function(){
+            Z.checkWHT();
+            Z.isTouchSolve();
+            // Z.getElementById();
+        }
+    };Z.init();
+
+// ** LOAD **
+    // var LOAD = {
+    //     setClass : null, // 显示设置项
+
+    //     inOpt : {}, // 原设置
+    //     isWork : false, // 工作流程是否已经结束
+
+    //     wrap: null,
+    //     text: null,
+    //     progress: null,
+
+    //     checkOpt: function (opt){
+    //         console.log('LOAD-checkOpt-this', this );
+    //         this.inOpt  = opt;
+    //         this.isWork = true;
+    //         if( opt.offLOAD ){
+    //             this.isWork = false;
+    //             return;
+    //         }
+
+    //         opt.LOAD = opt.LOAD || {};
+
+    //         this.wrap = CRE('div', { className:'LOAD'});
+
+    //         opt.LOAD.warpPrentNode || this.wrap.appendChild(CRE('em',{className:'icon', innerHTML:'&#xe782;'}));
+
+    //         this.progress = CRE('progress',{ value:0, max:100});
+    //             this.wrap.appendChild(this.progress);
+    //             this.progress.style.display = 'none';
+
+    //         this.text = CRE('strong');
+    //             this.wrap.appendChild(this.text);
+
+    //         if( opt.LOAD.warpPrentNode ){
+    //             this.wrap.style.position = opt.LOAD.position || 'absolute'; //  absolute relative
+    //             this.wrap.style.top      = opt.LOAD.top  || 0;
+    //             this.wrap.style.left     = opt.LOAD.left || 0;
+    //             this.wrap.style.margin   = opt.LOAD.margin || 0;
+
+    //             this.warpPrentNode = opt.LOAD.warpPrentNode;
+    //             this.warpPrentNode.appendChild(this.wrap);
+    //             this.ispop = false;
+    //         }
+    //         else{
+
+    //             this.info = CRE('small');
+    //             this.wrap.appendChild(this.info);
+    //             this.warpPrentNode = POP({ noBackground: true, content: this.wrap, noMouserResize:true });
+    //             // this.warpPrentNode.classList.add('processRotate');
+    //             this.ispop = true;
+    //         }
+    //     },
+
+    //     E: function(en,ev){
+    //         var that = this;
+    //         if( !this.isWork ){ return; }
+    //         if( this.inOpt.hasOwnProperty(en) ){ return this.inOpt.en(ev); }
+    //         console.log('LOAD-E' ,en, this);
+    //         ev = ev && (ev.target || ev.srcElement);
+    //         // console.log(en,ev); #96fb28
+    //         switch(en){
+    //             case 'onreadystatechange' : txt('准备'); this.wrap.style.backgroundColor = '#fafb28'; break;
+    //             case 'onloadstart'        : txt('连接');     this.wrap.style.backgroundColor = '#8cff4e'; break;
+    //             case 'uploadOnloadstart'  : txt('发送');     this.progress.style.display = 'block'; this.progress.value = '1'; break;
+    //             case 'uploadOnprogress'   : txt('发送中..'); ev && (this.progress.value = ev); break;
+    //             case 'uploadOnload'       : txt('发送成功'); this.progress.value = 100; break;
+    //             case 'uploadOnloadend'    : txt('发送完成'); break;
+    //             case 'onprogress'         : txt('等待响应'); break;
+    //             case 'onload'             : txt('成功');     this.wrap.style.backgroundColor = '#96fb28'; close(); break;
+    //             case 'onloadend'          : txt('完成');     this.wrap.style.backgroundColor = '#96fb28'; close(); break;
+    //             case 'ontimeout'          : error(); break;
+    //             case 'onerror'            : error(); break;
+    //             case 'close'              : close(); break;
+    //         }
+
+    //         function txt(e){
+    //             // console.log('LOAD E txt that = this', that );
+    //             that.text && (that.text.textContent = e);
+    //             that.info && (that.info.textContent = en);
+    //         }
+    //         function close(){ //return;
+    //             // console.log('LOAD E close this', that );
+    //             that.wrap && that.ispop
+    //                 ? that.warpPrentNode.parentNode.parentNode.removeChild(that.warpPrentNode.parentNode)
+    //                 : (that.wrap.length>0 &&  that.warpPrentNode.removeChild(that.wrap));
+    //                 that.isWork = false;
+    //         }
+    //         function error(){
+    //             // console.log('LOAD E error that', that );
+    //             close();
+    //             POP({ title: '通讯错误',
+    //                     content : 'ERROR: status:'+ev.status+'; readyState: '+ev.readyState+'; textStatus: '+ev.textStatus
+    //                                 +'{'+JSON.stringify(ev)+'}'
+    //                 });
+
+    //         }
+    //     }
+    // }
+
+    function XHR(opt){
+        opt.url = (opt.url||Z.xhrHttp) +
+                '?rand=' + (opt.rand||Math.random()) +
+                '&json=' + (opt.get&&JSON.stringify(opt.get));
+
+
+        var xhr = new XMLHttpRequest() || new ActiveXObject('Microsoft.XMLHTTP');
+        xhr.open( (opt.data?'POST':'GET') ,opt.url , true);
+        // xhr.responseType = "text";
+        // xhr.setRequestHeader('Cache-Control','max-age=120');
+
+        if( xhr.timeout ){ xhr.timeout = 1000; } // ie浏览器报错
+        xhr.onreadystatechange = function(){ opt.onreadystatechange && opt.onreadystatechange('准备'); }
+        xhr.onloadstart        = function(){ opt.onloadstart && opt.onloadstart('连接'); }
+        // xhr.upload.onloadstart = function(){ opt.uploadOnloadstart && opt.uploadOnloadstart('发送'); }
+        // xhr.upload.onprogress  = function(e){ opt.uploadOnprogress && opt.uploadOnprogress( (e.lengthComputable && (e.loaded / e.total)*100) ); }
+        // xhr.upload.onload      = function(){ opt.uploadOnload && opt.uploadOnload('发送成功'); }
+        // xhr.upload.onloadend   = function(){ opt.uploadOnloadend && opt.uploadOnloadend('发送完成'); }
+        // xhr.onprogress         = function(){ opt.onprogress('等待响应'); }
+        xhr.onload             = function(){
+            if(  (xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 ){
+                var res = xhr.responseText;
+                    res = JSON.parse(res);
+                if( res.status ){
+                    POP({ title:'错误', selcetNo : '关闭', content:'服务器信息 [ '+res.status+' ]' });
+                }
+                else{
+                    opt.onload && opt.onload(res);
+                }
+            }
+            else{
+                opt.onerror &&  opt.onerror('错误');
+            }
+        }
+        xhr.onloadend = function(){ opt.onloadend && opt.onloadend('完成'); }
+        xhr.ontimeout = function(){ opt.ontimeout && opt.ontimeout('超时'); }
+        xhr.onerror   = function(){ opt.onerror && opt.onerror('错误'); }
+
+        xhr.send( (opt.data||null) );
+        opt.abort && abort();
+
+    }
+
+
+    function zFileReader(r){
+        if( !r.F ) return;
+        var reader = new FileReader();
+        reader.onloadstart = function(e){ r.S && r.S(e); }
+        reader.onprogress = function(e){ r.P && r.P(e); }
+        reader.onabort = function(e){ r.A && r.A(e); }
+        reader.onerror = function(e){ r.E && r.E(e); }
+        reader.onload = function(e){ r.D && r.D(e); }
+        reader.readAsDataURL( r.F );
+    }
+
+// ** 事件 **
+
+    EDD({ o:'resize', f:function(){
+        Z.checkWHT();
+    }});
+
+    EDD({ o:'hashchange', r:function(){
+        hashClassTip();
+    }});
+
+    EDD({ o:'scroll', r:function(){
+        Z.scrollTop = Math.max(DOC.documentElement.scrollTop, DOC.body.scrollTop);
+
+        // sidebarFixed
+        if( !Z.sidebarFixed ){
+            Z.sidebarFixed = DOC.getElementById('sidebarFixed');
+            Z.sidebarFixed && (Z.sidebarFixed.fixedTop = getFixedOffsetTopLeft(Z.sidebarFixed).top);
+        }
+        else{
+            if( Z.scrollTop < Z.sidebarFixed.fixedTop && Z.sidebarFixed.style.position == 'fixed' ){
+                Z.sidebarFixed.style.position = 'static';
+            }
+            else if( Z.scrollTop >= Z.sidebarFixed.fixedTop && Z.sidebarFixed.style.position != 'fixed' ){
+                Z.sidebarFixed.style.position = 'fixed';
+                Z.sidebarFixed.style.top = 0 + 'px';
+            }
+        }
+    }});
+
+
+    // data-click
+    DOC.onclick = function(evt){
+        var e = evt.target || evt.srcElement;
+        console.log('DOC.onclick',e);
+        if( e.hasAttribute('data-click') ){
+            switch( e.getAttribute('data-click') ){
+                case 'logo'          : top.window.location = '/'; break;
+                case 'login'         : login(e); break;
+                case 'logout'        : logout(e); break;
+                case 'teamInfoEdit'  : teamInfoEdit(e); break;
+                case 'popCloseGroup' : popCloseGroup(e); break;
+                case 'teamCenter'    : top.window.location = '/Team/Centre/index.php'; break;
+                case 'filterNav'     : filterNav(e); break;
+                case 'searchForm'    : searchForm.submit(); break;
+                case 'signTextClick' : signTextClick(e); break;
+                case 'signText'      : signText(); break;
+                case 'loginUnlock'   : loginUnlock(e); break;
+                case 'editModeToggle': editModeToggle(e); break;
+                case 'loginWinOpen':
+                    e.title && WIN.open('/Team/loginOpen.php?a=' + e.title + '&o=' + e.getAttribute('data-get'), e.title + 'Login', 'width=600,height=400,menubar=0,scrollbars=1,resizable=1,status=1,titlebar=0,toolbar=0,location=1');
+                    break;
+                case 'sidebarHeightPop':
+                    POP({ noBackground: true, onMouserResize:true, title: e.title, content: DOC.getElementById(e.getAttribute('data-get')).outerHTML });
+                    break;
+            }
+        }
+    }
+
+// ** DOM **
+
+    // 绑定
+    function EDD (opt){
+        return  !opt || !opt.o || ( !opt.f && !opt.r )
+                ? false
+                : ( opt.r && (opt.r)() === false // r 绑定前运行一次,如果结果为false,就不绑定.
+                    ? false
+                    : (  Z.addEventListener
+                        ? (opt.e||WIN).addEventListener(opt.o, (opt.f||opt.r), (opt.u?true:false))
+                        : (opt.e||WIN).attachEvent('on'+opt.o, (opt.f||opt.r) )
+                        )
+                   );
+    }
+
+    // 解绑
+    function ERD(opt){
+        Z.addEventListener ? (opt.e||WIN).removeEventListener(opt.o,opt.f,(opt.u?true:false)) : (opt.e||WIN).detachEvent('on'+opt.o,opt.f);
+    }
+
+    // 对象
+    function CRE(e,opt){
+        var e = typeof e === 'string' ? DOC.createElement(e) : e;
+        if( !opt ) return e;
+
+        opt.innerHTML  && (e.innerHTML = opt.innerHTML) && delete opt.innerHTML;
+        opt.textContent&& (e.textContent = opt.textContent) && delete opt.textContent;
+
+        // 作用e的函数,不绑定事件; eddrc需要绑定事件
+        opt.cfun && typeof opt.cfun == 'function' && opt.cfun.call(opt.cfun, e) && delete opt.cfun;
+
+        ( opt.eddf || opt.eddr || opt.eddfc || opt.eddrc ) && EDD({
+                e: (opt.edde || e),
+                o: (opt.eddo || 'click'),
+                f: (opt.eddf || false ),
+                r: (opt.eddr || (opt.eddrc && (e.eddrc = opt.eddrc) && function(){ e.eddrc.call(e.eddrc, e)} ) || false )
+            });
+        delete opt.eddf; delete opt.eddfc; delete opt.eddo; delete opt.eddr;delete opt.eddrc;
+
+        for( var k in opt ){
+
+            if( k == 'CRE' || k == 'cfun' || k == 'edde' || k == 'eddo' || k == 'eddf' || k == 'eddfc' || k == 'eddr' || k == 'eddrc' ){ continue; }
+            else if( !opt[k] ){ continue; /*opt[k] = k;*/ }
+            else{
+                switch(k){
+                    case 'className'    : e.className   = opt[k]; break;
+                    case 'dataClick'    : e.setAttribute( 'data-click', opt[k]); break;
+                    case 'dataGet'      : e.setAttribute( 'data-get', opt[k]); break;
+                    case 'style'        : for(var sk in opt[k] ){ e.style[sk] = opt[k][sk]; } break;
+                    default : e.setAttribute( k, opt[k]); break;
+                }
+            }
+        }
+
+        // innerHTML 之后 继续为e添加DOM对象
+        if( opt.CRE ){
+            for (var i = 0, len = opt.CRE.length; i < len; i++) {
+                typeof opt.CRE[i] == 'object' && e.appendChild( opt.CRE[i] );
+            }
+            delete opt.CRE;
+        }
+        return e;
+    };
+
+    // 属性
+    function DAS(e,n,v){
+        return  v ? e.setAttribute('data-'+n, v) : e.getAttribute('data-'+n);
+    }
+
+// ** 存储 **
+    function SSD(opt){
+        return !WIN.localStorage || !opt || ( !opt.key && !opt.value && !opt.del && !opt.clear )
+                ? false
+                : ( !opt.key
+                    ? ( !opt.clear ? false : localStorage.clear() )
+                    : (
+                        !opt.value
+                        ? ( !opt.del
+                            ? ( !localStorage.getItem( opt.key ) ? false : JSON.parse( localStorage.getItem( opt.key ) ) )
+                            : localStorage.removeItem( opt.key ) )
+                        : localStorage.setItem( opt.key, JSON.stringify(opt.value) )
+                        )
+                    )
+    }
+    function DDR(opt){
+        return !WIN.sessionStorage || !opt || ( !opt.key && !opt.value && !opt.del && !opt.clear )
+                ? false
+                : ( !opt.key
+                    ? ( !opt.clear ? false : sessionStorage.clear() )
+                    : (
+                        !opt.value
+                        ? ( !opt.del
+                            ? ( !sessionStorage.getItem( opt.key ) ? false : JSON.parse( sessionStorage.getItem( opt.key ) ) )// sessionStorage.getItem( opt.key )
+                            : sessionStorage.removeItem( opt.key )
+                            )
+                        : sessionStorage.setItem( opt.key, JSON.stringify(opt.value) )
+                        )
+                    )
+    }
+
+
+// ** ** **** ** **
+// ** ** 路程 ** **
+// ** ** **** ** **
+
+// ** 通用 **
+    // 列表
+    ;(function(){
+        var clistUl = DOC.getElementById('clistUl'); if( !clistUl ) return;
+
+        DOC.body.style.paddingBottom = '5em';
+
+        var nid = clistUl.getAttribute('data-nid');
+        var tip = CRE('p');
+
+        var ddrKey = 'clistUl'/* + nid*/,
+            ddrValue = DDR({ key: ddrKey });
+
+        var pageNumber         = 1,
+            pageCount    = clistUl.getAttribute('data-pageCount'),
+            startXhr     = Z.scrollHeight - Z.clientHeight;
+
+        var filter = DOC.getElementById('filterNav'),
+            filterResultInfo = DOC.getElementById('filterResultInfo'),
+            filterSelect = {};
+
+        if( ddrValue ){
+
+            if( ddrValue.filter ){
+                filterSelect = ddrValue.filter;
+                var x;
+                for( x in ddrValue.filter ){
+                    if(!x || !ddrValue.filter[x]) continue;
+                    DOC.getElementById('filterA'+x+ddrValue.filter[x]).className = 'select';
+                }
+                clistUl.innerHTML = '';
+                filterResultInfo = CRE('div',{ id:'filterResultInfo', innerHTML:ddrValue.filterResultInfo });
+                clistUl.parentNode.insertBefore(filterResultInfo, clistUl);
+                getXhr(function(){ this.items && clistUl.appendChild( CRE('ul',{ innerHTML: this.items}) ); });
+            }
+            else if( ddrValue.pageNumber > 1 ){
+                for (var i = 2 ; i <= ddrValue.pageNumber; i++) {
+                    pageNumber = i;
+                    getXhr(function(){ this.items && clistUl.appendChild( CRE('ul',{ innerHTML: this.items}) ); });
+                }
+            }
+
+            pageCount         = ddrValue.pageCount;
+            pageNumber              = ddrValue.pageNumber;
+            startXhr          = Math.max(DOC.documentElement.scrollHeight, DOC.body.scrollHeight) - Z.clientHeight;
+        }
+
+
+        EDD({ o:'scroll', f: function(){
+            if( pageCount <= pageNumber || Z.scrollTop < startXhr ){
+                startXhr > Z.scrollHeight && (startXhr = Z.scrollHeight - Z.clientHeight);
+                return;
+            }
+            else{
+                startXhr = startXhr * 100;
+                if( pageCount <= pageNumber ){
+                    clistUl.appendChild( CRE('p',{innerHTML:'已经显示全部'}) );
+                    return;
+                }
+                else{
+                    clistUl.setAttribute('data-classIsProcessBottom',true);
+                    ++pageNumber;
+                    getXhr(function(){
+                        this.items && clistUl.appendChild( CRE('ul',{ innerHTML: this.items}) );
+                        clistUl.removeAttribute('data-classIsProcessBottom');
+                        if( pageCount > pageNumber ){
+                            tip.innerHTML = '页面下拉到最底部，自动加载下一页。';
+                        }
+                        else{
+                            tip.innerHTML = '已经显示全部';
+                        }
+                        clistUl.appendChild(tip);
+                    });
+                }
+            }
+        }});
+
+        filter && EDD({ e: filter, o: 'click', f: function(evt){
+                startXhr = startXhr * 100;
+                // console.log('filterSelect ',e);
+                evt.preventDefault();
+                evt.stopPropagation();
+                var e = evt.target;
+
+                var eName = e.getAttribute('data-name');
+                var eValue = e.getAttribute('data-value');
+            console.log( 'filterSelect', filterSelect);
+
+                if( !filterSelect[eName] ){
+                    filterSelect[eName] = eValue;
+                    e.className = 'select';
+                }
+                else if( filterSelect[eName] && filterSelect[eName] == eValue ){
+                    e.className = '';
+                    filterSelect[eName] = null;
+                }
+                else if( filterSelect[eName] && filterSelect[eName] != eValue ){
+                    DOC.getElementById('filterA'+eName+filterSelect[eName]).className = '';
+                    filterSelect[eName] = eValue;
+                    e.className = 'select';
+                }
+
+                if( !filterResultInfo ){
+                    filterResultInfo = CRE('div',{id:'filterResultInfo'});
+                    clistUl.parentNode.insertBefore(filterResultInfo, clistUl);
+                }
+
+                filterResultInfo.setAttribute('data-classIsProcess',true);
+                pageNumber = 1;
+                getXhr(function(){
+                    pageCount = this.pageCount;
+                    filterResultInfo.className = '';
+                    filterResultInfo.innerHTML = '结果: <strong>'+this.number+'</strong> <i>'+(this.keyword||'')+'</i>';
+                    filterResultInfo.removeAttribute('data-classIsProcess');
+                    clistUl.innerHTML = !this.items ? '<p>没有内容。</p>' : '<ul>'+this.items+'</ul>';
+                });
+        }});
+
+        function getXhr(callback){
+            XHR({
+                rand : 'l',
+                get: {
+                    g      : 'clistUl',
+                    c      : clistUl.className,
+                    nid    : nid,
+                    page   : pageNumber,
+                    filter : (filterSelect||null)
+                },
+                onload: function(res) {
+                    callback.call(res);
+                    DDR({
+                        key  : ddrKey,
+                        value: {
+                            nid        : nid,
+                            pageNumber : pageNumber,
+                            pageCount  : res.pageCount,
+                            filter     : (filterSelect||null)
+                            // filterResultInfo : filterResultInfo.innerHTML
+                        }
+                    });
+                }
+            });
+        }
+    }());
+
+
+
+// ** PC **
+    if( !Z.isMob ){
+        // logo
+        DOC.getElementById('logo').setAttribute('data-click','logo');
+        // warning
+        Z.warning = DOC.getElementById('warning');
+        Z.warning.appendChild(CRE('div',{
+                        id    :'warningBackground',
+                        edde  : WIN,
+                        eddo  :'resize',
+                        eddrc : function(e){
+                                    e.style.height = (Z.warning.offsetHeight + 5) + 'px';
+                                    e.style.width = Z.clientWidth + 'px';
+                                    e.style.left = (-(Z.clientWidth - Z.warning.offsetWidth) / 2) + 'px';
+                                }
+                    }));
+        // hearder
+        Z.header = DOC.getElementById('header');
+        Z.header.appendChild(CRE('div',{
+                        id    :'headerBorder',
+                        edde  : WIN,
+                        eddo  :'resize',
+                        eddrc : function(e){
+                                    e.style.width = Z.clientWidth + 'px';
+                                    e.style.left = (-(Z.clientWidth - Z.warning.offsetWidth) / 2) + 'px';
+                                }
+                    }));
+
+        // pcTSS
+        Z.pcTSS = DOC.getElementById('pcTSS');
+        Z.pcTSS.innerHTML =
+            '<div id="teamCenter">'+
+                '<span id="bdsharebuttonbox" class="bdsharebuttonbox">'+
+                    '<a title="分享" id="bdsharebutton_more" data-cmd="more" class="icon bdshare">&#xe6f0;</a>'+
+                '</span>'+
+                (
+                    Z.cookieZc != 'ok'
+                        ? '<a title="会员登录" class="icon" data-click="login">&#xe67a;</a>'
+                        : (
+                            '<img src="'+Z.cookieZt+'" width="20" height="20" alt="'+Z.cookieZn+'" title="'+Z.cookieZn+'" data-click="teamCenter">'+
+                            '<a title="开启编辑模式" class="icon '+(getCookie('ZE')&&'now')+'" data-click="editModeToggle">&#xe6b9;</a>'+
+                            '<a title="会员首页" class="icon" data-click="teamCenter">&#xe6b7;</a>'+
+                            '<a title="切换入口" class="icon" data-click="login">&#xe79a;</a>'+
+                            '<a title="退出登录" class="icon" data-click="logout">&#xe813;</a>'
+                          )
+                )+
+            '</div>'+
+            '<form id="searchForm" name="searchForm" action="/so.php" method="get">'+
+                '<input id="searchKeyWord" type="text" name="keyword" autocomplete="on">'+
+                '<a title="站内搜索" class="icon searchForm" data-click="searchForm">&#xe6dd;</a>'+
+                '<a title="页面查找" class="icon signText" data-click="signText">&#xe72b;</a>'+
+            '</form>';
+
+        // baidu share
+        DOC.body.appendChild(CRE('script',{
+            type:'text/javascript',
+            textContent: 'window._bd_share_config = { "common": {"bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdPic": "", "bdStyle": "0", "bdSize": "16"}, "share": {} };with(document) 0[(getElementsByTagName(\'head\')[0] || body).appendChild(createElement(\'script\')).src = \'http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion=\' + ~(-new Date() / 36e5)];'
+        }));
+
+        // 单击右键,没有提前选中文字,就不操作
+        DOC.getElementById('main').oncontextmenu = function(e){
+            console.log(e);
+            var text;
+            if (window.getSelection) {
+                text = window.getSelection().toString();
+            }
+            else if (document.getSelection) {
+                text = document.getSelection();
+            }
+            else if (document.selection) {
+                text = document.selection.createRange().text;
+            }
+            if( text ){
+                signText(text);
+                return false;
+            }
+        }
+        // document.onclick= function(){
+        //     wrap.style.display = 'block';
+        // }
+
+        // sidebarFixed
+        Z.sidebarFixed = DOC.getElementById('sidebarFixed');
+        ;(function(){ if( !Z.sidebarFixed ) return;
+
+            // Height > 180
+            ;(function(){
+                var ul,h4,set = ['bookList', 'drugList', 'searchBooks'];
+                for (var i = 0, len = set.length; i < len; i++) {
+                    ul = DOC.getElementById(set[i]);
+                    if (!ul || ul.scrollHeight < 180 || ul.parentNode.id == 'main' ) continue;
+                    h4 = ul.parentNode.firstChild.textContent;
+                    ul.parentNode.appendChild(CRE('a',{ title:h4, dataClick:'sidebarHeightPop', dataGet:set[i], className:'icon pop', innerHTML:'&#xe64d;' }));
+                }
+            }());
+
+            EDD({ o:'scroll', r:function(){
+                if( Z.scrollTop < Z.sidebarFixed.fixedTop && Z.sidebarFixed.style.position == 'fixed' ){
+                    Z.sidebarFixed.style.position = 'static';
+                }
+                else if( Z.scrollTop >= Z.sidebarFixed.fixedTop && Z.sidebarFixed.style.position != 'fixed' ){
+                    Z.sidebarFixed.style.position = 'fixed';
+                    Z.sidebarFixed.style.top = 0 + 'px';
+                }
+            }});
+
+            // 正文内容的边栏提示
+            ;(function() {
+
+                var siUl = Z.sidebarFixed.querySelector('#bookList','#drugList');
+                if( !siUl ) return;
+
+                WIN.location.hash && setOffsetTop( WIN.location.hash.slice(3), 'hash' );
+
+                var ciAll = DOC.getElementById('main').querySelectorAll('[id^="ci"]');
+                if( ciAll ){
+                    var siNowLi = DOC.getElementById( 'si' + ciAll[0].id.slice(2) );
+                    if( siNowLi && siNowLi.parentNode != siUl && siNowLi.querySelector('ul') ){
+                        siNowLi.className = 'now';
+                    }
+                }
+
+                var oldSiA, isNow, toPrev, toNext, zSTop, padd = Z.clientHeight*0.25;
+                EDD({ o:'load', r:function(){
+                    if ( !ciAll ){
+                        return false;
+                    }
+                    else if ( ciAll.length == 1 ){
+                        setOffsetTop( ciAll[0].id.slice(2) );
+                        return false;
+                    }
+                    else{
+                        EDD({ o:'scroll', r:function(){
+                            zSTop = Z.scrollTop + padd;
+                            if( (zSTop > toPrev) && (zSTop < toNext) ) return;
+
+                            isNow = toPrev = toNext = null;
+                            for (var i = 0, len = ciAll.length; i < len; i++) {
+                                if( zSTop > ciAll[i].offsetTop ){
+                                    isNow = ciAll[i].id;
+                                    toPrev = ciAll[i].offsetTop;
+                                }
+                                else{
+                                    isNow = isNow || ciAll[i].id;
+                                    toNext = ciAll[i].offsetTop;
+                                    break;
+                                }
+                            }
+                            setOffsetTop( isNow.slice(2) );
+                            toPrev = toPrev || 0 ;
+                            toNext = toNext || Z.scrollHeight;
+                        }});
+                    }
+                }});
+                function setOffsetTop(nowSiA, cn){
+                    console.log('setOffsetTop', nowSiA);
+                    nowSiA = DOC.getElementById( 'si' + nowSiA );
+                    siUl.scrollTop = nowSiA.offsetTop - siUl.offsetTop - 50;
+                    nowSiA.querySelector('a').className = (cn||'now');
+
+                    if( oldSiA == nowSiA ) return;
+                    oldSiA && oldSiA.querySelector('a').removeAttribute('class');
+                    oldSiA = nowSiA;
+                }
+
+            }());
+        }());
+
+    }
+
+// ** MOB **
+    else{
+        var xsheader = CRE('div',{id:'xsheader'});
+            xsheader.appendChild(CRE('a',{title:'站内搜索', id:'xsSearch', className:'icon search', innerHTML:'&#xe6dd;'}));
+            xsheader.appendChild(CRE('a',{title:'主目录', id:'xsNavFarst', className:'icon navFirst', innerHTML:'&#xe60c;'}));
+        Z.header.appendChild(xsheader);
+
+        // 下拉隐藏
+        var sPrev = 0;
+        EDD({o:'scroll', r:function(){
+            if(Z.scrollTop > Z.header.offsetHeight){
+                Z.header.className = 'scroll';
+                if( Z.scrollTop > sPrev && Z.scrollTop-sPrev > Z.header.offsetHeight ) {
+                    Z.header.style.transform = 'translateY(-3em)';
+                }
+                else if( Z.scrollTop < sPrev && sPrev - Z.scrollTop < Z.header.offsetHeight ) {
+                    Z.header.style.transform = 'translateY(0px)';
+                }
+            }
+            else if(Z.scrollTop == 0){
+                Z.header.removeAttribute('style');
+                Z.header.removeAttribute('class');
+            }
+            Math.abs(sPrev-Z.scrollTop) > Z.header.offsetHeight && (sPrev = Z.scrollTop);
+        }});
+    }
+
+// ** **** **
+// ** 部件 **
+// ** **** **
+
+// ** 文章列表 **
+
+
+// ** 会员操作 **
+    function teamInfoEdit(e){
+        e.onfocus = DDR({ key:'oldValue', value:e.value });
+        e.onchange = function(){
+            if( e.value == DDR({ key:'oldValue' }) ) return;
+            XHR({
+                get: { g: 'teamInfoEdit', n: e.id, v: (e.value || null) },
+                onload: function() {
+                    DDR({ key:'oldValue', value:e.value });
+                    POP({ selcetNo : '关闭', content: '修改成功' });
+                }
+            });
+        }
+    }
+
+    function teamLoginCheck(){
+        if( Z.cookieZc == 'ok' && Z.cookieZn && Z.cookieZt ){ return true; }
+        else{
+            XHR({
+                get: { g: 'teamLoginCheck' },
+                onload: function(res) {
+                    // res = res && JSON.parse(res);
+                    if( res.data || res.data == 'no' ) {
+                        Z.cookieZc = 'no';
+                        setCookie('ZT',1,-1);
+                        setCookie('ZN',1,-1);
+                        setCookie('ZC','no');
+                        return false;
+                    }
+                    else{
+                        Z.cookieZt = res.tx;
+                        Z.cookieZn = res.nc;
+                        Z.cookieZc = 'ok';
+                        setCookie('ZT',res.tx);
+                        setCookie('ZN',res.nc);
+                        setCookie('ZC','ok');
+                        return true;
+                    }
+                }
+            });
+        }
+    };
+
+    function login(e){
+        XHR({
+            get : { g:'login', oid: (e.getAttribute('data-get')||null) },
+            onload : function(res){
+                POP({ title:(e.title||''), content:res.data });
+            }
+        });
+    }
+
+    // 退出登陆
+    function logout() {
+        POP({
+            content: '退出登录!', selectOk : '确定', selcetNo : '取消', closeGroup: true,
+            okFunction: function() {
+                XHR({
+                    get: { g: 'logout' },
+                    onload: function() { POP({ selectOk : '成功', content: '成功退出登录！', reload: true }); }
+                })
+            }
+        });
+    };
+
+    function loginUnlock(e){
+        e && POP({
+                content: '解除绑定!', selectOk : '确定', selcetNo : '取消', closeGroup: true,
+                okFunction: function() {
+                    XHR({
+                        get: { g: 'loginUnlock', v: e.getAttribute('data-get') },
+                        onload: function() {POP({ selectOk : '成功', content: '成功解除锁定！', reload: true }); }
+                    })
+                }
+            });
+    }
+
+    function editModeToggle(e){
+        if( getCookie('ZE') ){ //editMode
+            setCookie('ZE',0,-1);
+            window.location.reload();
+        }
+        else{
+            POP({
+                title: e.title,
+                content: '<strong>这是测试功能，可能的问题：</strong><ul><li class="red">页面加载慢</li><li>校验提示不清晰</li><li>我也不知道...</li></ul>' ,
+                selectOk: '确定',
+                selcetNo: '取消',
+                okFunction: function(){
+                    setCookie('ZE',1);
+                    window.location.reload();
+                }
+            });
+        }
+    }
+
+// ** 单独提交 **
+
+// ** 传输 **
+//
+    // 显示大图
+    var imgTipBig = {
+
+        evt : null,
+        big : null,
+        wrap : null,
+
+        init : function(evt){
+            if( !imgTipBig.wrap || !imgTipBig.evt || imgTipBig.evt != evt.target ){
+               imgTipBig.loadBig(evt);
+               imgTipBig.evt = evt.target;
+            }
+
+            imgTipBig.mouseTip(evt);
+
+        },
+        loadBig : function(evt) {
+            console.log( 'loadBig');
+            imgTipBig.wrap = DOC.getElementById('imgTipBig');
+            if( !imgTipBig.wrap ){
+                imgTipBig.wrap = CRE('div',{id:'imgTipBig',innerHTML:'<span class="icon processRotate">&#xe659;</span>',style:{zIndex:Z.zIndexImgGlasses}});
+                DOC.body.appendChild(imgTipBig.wrap);
+            }
+
+            imgTipBig.big = new Image();
+            imgTipBig.big.src = DAS(evt.target,'digSrc') ? DAS(evt.target,'digSrc') : evt.target.getAttribute('src');
+            imgTipBig.big.onload = function(){
+                while( imgTipBig.wrap.hasChildNodes() ){imgTipBig.wrap.removeChild(imgTipBig.wrap.firstChild);}
+                if( evt.target.getAttribute('alt') ){
+                    imgTipBig.wrap.appendChild(CRE('strong',{textContent:evt.target.getAttribute('alt')}));
+                }
+                imgTipBig.wrap.appendChild(imgTipBig.big);
+            }
+        },
+        mouseTip : function(evt){
+            console.log( 'mouseTip');
+            var zW = Z.clientWidth/4;
+            var zH = Z.clientHeight/4;
+            console.log( 'zW', zW);
+            console.log( 'zH', zH);
+
+            var isWidthMax = imgTipBig.big.width > imgTipBig.big.height ? true : false;
+            var setMax = isWidthMax
+                            ? (imgTipBig.big.width>zW ? zW : imgTipBig.big.width)
+                            : (imgTipBig.big.height>zH ? zH : imgTipBig.big.height);
+
+            var setMin = setMax*(isWidthMax ? imgTipBig.big.height/imgTipBig.big.width : imgTipBig.big.width/imgTipBig.big.height);
+
+            var bigImgW = isWidthMax ? setMax : setMin;
+            var bigImgH = isWidthMax ? setMin : setMax;
+
+            imgTipBig.wrap.style.width = bigImgW + 'px';
+            imgTipBig.wrap.style.height = bigImgH + 'px';
+
+            var m = Z.mouseXY(evt);
+
+            var wR = m.clientX + 15;
+            var wL = m.clientX - 15 - bigImgW;
+            imgTipBig.wrap.style.left = Z.clientWidth - wR - bigImgW > wL ? wR + 'px' : wL + 'px';
+
+            var hT = m.clientY - 15 - bigImgH;
+            var hB = m.clientY + 15;
+            imgTipBig.wrap.style.top = Z.clientHeight - hB - bigImgH > hT ? hB + 'px' : hT + 'px';
+
+            evt.target.onmouseleave = function(){
+                imgTipBig.wrap && DOC.body.removeChild(imgTipBig.wrap);
+                imgTipBig.wrap = imgTipBig.evt = null;
+            }
+        }
+    }
+    var imgGlasses = {
+        wrap : null,
+
+        init: function(){
+            imgGlasses.wrap = DOC.getElementById('imgGlasses');
+            if( !imgGlasses.wrap ){
+                imgGlasses.wrap = CRE('div',{id:'imgGlasses',innerHTML:'<span class="icon processRotate">&#xe659;</span>',style:{zIndex:Z.zIndexImgGlasses}});
+                DOC.body.appendChild(imgGlasses.wrap);
+            }
+        },
+        imgTipBig: function(evt){
+            imgGlasses.wrap = DOC.getElementById('imgGlasses');
+            if( !imgGlasses.wrap ){
+                imgGlasses.wrap = CRE('div',{id:'imgGlasses',innerHTML:'<span class="icon processRotate">&#xe659;</span>',style:{zIndex:Z.zIndexImgGlasses}});
+                DOC.body.appendChild(imgGlasses.wrap);
+            }
+
+            imgBig = new Image();
+            imgBig.src = DAS(evt.target,'digSrc') ? DAS(evt.target,'digSrc') : evt.target.getAttribute('src');
+            imgBig.onload = function(){
+                imgGlasses.wrap.removeChild(imgGlasses.wrap.firstChild);
+                imgGlasses.wrap.append(imgBig);
+            }
+
+            e = getFixedOffsetTopLeft(evt.target);
+
+            bigImgW = evt.target.scrollWidth*3;
+            bigImgH = evt.target.scrollHeight*3;
+
+            imgGlasses.wrap.style.left =  e.left + evt.target.scrollWidth + bigImgW < Z.clientWidth
+                    ? e.left + evt.target.scrollWidth + 'px'
+                    : e.left - bigImgW + 'px';
+            imgGlasses.wrap.style.top = e.top + evt.target.scrollHeight + bigImgH < Z.clientHeight
+                    ? e.top + evt.target.scrollHeight + 'px'
+                    : e.top - bigImgH + 'px';
+
+            imgGlasses.wrap.style.width = bigImgW + 'px';
+            imgGlasses.wrap.style.height = bigImgH + 'px';
+
+
+            if( imgGlasses.wrap ){
+                evt.target.onmouseout = function(){ DOC.body.removeChild(imgGlasses.wrap); imgGlasses.wrap = null;}
+
+            }
+
+        },
+
+        aainit: function(evt){
+            imgGlasses.wrap = DOC.getElementById('imgGlasses');
+            if( !imgGlasses.wrap ){
+                imgGlasses.wrap = CRE('div',{id:'imgGlasses',innerHTML:'<span class="icon processRotate">&#xe659;</span>',style:{zIndex:Z.zIndexImgGlasses}});
+                DOC.body.appendChild(imgGlasses.wrap);
+            }
+
+            imgBig = new Image();
+            imgBig.src = DAS(evt.target,'digSrc') ? DAS(evt.target,'digSrc') : evt.target.getAttribute('src');
+            imgBig.onload = function(){
+                imgGlasses.wrap.removeChild(imgGlasses.wrap.firstChild);
+                imgGlasses.wrap.append(imgBig);
+            }
+
+
+            e = Z.mouseXY(evt);
+            console.log('e',e);
+            imgGlasses.wrap.style.left = e.clientX+ 5 + 'px';
+            imgGlasses.wrap.style.top = e.clientY + 5 + 'px';
+            // evt.onmouseout = function(){ DOC.body.removeChild(imgGlasses.wrap); imgGlasses.wrap = null; }
+
+
+        }
+    }
+
+    // 图片上传
+    function imgUpLoad(evt){
+        Z.imgUpLoad || (Z.imgUpLoad = {});
+        Z.imgUpLoad.uploadFAddId || (Z.imgUpLoad.uploadFAddId = 1);
+        Z.imgUpLoad.checkFormMustLi || (Z.imgUpLoad.checkFormMustLi = []);
+        Z.imgUpLoad.checkRepeatFile || (Z.imgUpLoad.checkRepeatFile = []);
+        Z.imgUpLoad.uploadFiles || (Z.imgUpLoad.uploadFiles = []);
+
+        if( !checkFormNoNull(evt) ){
+            POP({title:'提示',content: '表单必填项是空的！'});
+            return;
+        }
+
+        start(evt.target);
+
+        function start(e){
+            Z.imgUpLoad.wrap = DOC.getElementById('imgUpLoad');
+            if( !Z.imgUpLoad.wrap ){
+                Z.imgUpLoad.wrap = CRE('div', {id: 'imgUpLoad' });
+                DOC.body.appendChild( Z.imgUpLoad.wrap );
+
+                pop = POP({
+                    title: '上传图片 - ' + Z.imgUpLoad.checkFormMustLi['bt'],
+                    titleNoClose: true,
+                    content: Z.imgUpLoad.wrap,
+
+                    otherButton: CRE('label',{ 'for':e.id, className:'button', innerHTML:'+ 添加图片' }),
+
+                    selectOk: '上传图片',
+                    selcetNo: '放弃',
+                    otherFunction: null,
+                    okFunction: startUpload,
+                    noFunction: function(){
+                                    Z.imgUpLoad.checkRepeatFile = [];
+                                    Z.imgUpLoad.uploadFiles = [];
+                                    console.log( 'noFunction',Z.imgUpLoad );
+                                }
+                });
+                EDD({ e:Z.imgUpLoad.wrap, o:'click', f:function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e = e.target || e.srcElement;
+                    console.log('imgUpLoad click', e);
+                    if( e.getAttribute('data-click') !== 'imgUpLoad' ) return;
+                    switch(e.getAttribute('data-get')){
+                        case 'delReadyImg' : delReadyImg(e); break;
+                    }
+                }});
+
+            }
+            fileList(e);
+            pop.style.top = (Z.clientHeight - pop.offsetHeight - 50) / 2 + 'px';
+            pop.style.left = (Z.clientWidth - pop.offsetWidth) / 2 + 'px';
+        }
+
+        function fileList(e,callback){
+            var extSet = /^(image\/jpg|image\/jpeg|image\/png|image\/bmp|image\/gif)$/i; // >期待值[.jpg|.jpeg|.png|.bmp|.gif
+            var iId,imgbody,img;
+            for (var i = 0, len = e.files.length; i < len; i++) {
+                iId = 'd'+Math.round(Date.parse(new Date(e.files[i].lastModifiedDate))+e.files[i].size);
+                if( Z.imgUpLoad.checkRepeatFile[iId] ){
+                    iId = 'o'+(++Z.imgUpLoad.uploadFAddId)+'o'+iId;
+                    strHtm(iId, e.files[i].name, '重复了');
+                    continue;
+                }
+                else{
+                    Z.imgUpLoad.checkRepeatFile[iId] = true;
+                    if( !extSet.test(e.files[i].type) ) {
+                        iId = 'e'+(++Z.imgUpLoad.uploadFAddId)+'e'+iId;
+                        strHtm(iId, e.files[i].name, '格式错误');
+                    }
+                    else{
+                        strHtm(iId, e.files[i].name);
+                        checkReadFile(e.files[i], iId, e.files[i].name);
+                    }
+                }
+            }
+            e.value = null;
+            return;
+
+            function strHtm(id,name,error){
+                var htm = '<a title="删除" data-click="imgUpLoad" data-get="delReadyImg" data-id="'+id+'" class="icon">&#xe6bc;</a><small title="'+name+'">'+name+'</small>';
+                Z.imgUpLoad.wrap.appendChild( CRE('div', {id:id, className: (error?'red':false), innerHTML:(error ? '<big>'+error+'</big>' : '')+htm }) );
+            }
+            function checkReadFile(file,id,alt){ // 检查文件
+                var wi = DOC.getElementById(id);
+                var oe = CRE('span',{className:'icon',innerHTML:'&#xe631;'});
+                wi.appendChild( oe );
+
+                var reader = new FileReader();
+                reader.onloadstart = function(e){ oe.innerHTML = '&#xe659;'; }
+                reader.onprogress = function(e){ oe.innerHTML = '&#xe6be;'; oe.setAttribute('data-classIsProcessRotate',true);  }
+                reader.onabort = function(e){ oe.innerHTML = '中断'; oe.className = 'red'; }
+                reader.onerror = function(e){ oe.innerHTML = '异常'; oe.className = 'red'; }
+                reader.onload = function(e){
+                            file['zid'] = id;
+                            file['src'] = e.target.result;
+                            Z.imgUpLoad.uploadFiles.push(file);
+                            wi.replaceChild(CRE('img',{alt:alt, src: e.target.result, eddo:'mousemove', eddf:imgTipBig.init}), oe);
+                }
+                reader.readAsDataURL( file );
+            }
+        }
+        function delReadyImg(evt){
+            var fileId = evt.getAttribute('data-id');
+            for (var i = 0, len = Z.imgUpLoad.uploadFiles.length; i < len; i++) {
+                if( !Z.imgUpLoad.uploadFiles[i] ){ continue; }
+                else if( fileId == Z.imgUpLoad.uploadFiles[i].zid ){
+                    Z.imgUpLoad.uploadFiles[i] = null;
+                    Z.imgUpLoad.wrap.removeChild( DOC.getElementById(fileId) );
+                    return;
+                }
+            }
+            Z.imgUpLoad.wrap.removeChild( DOC.getElementById(fileId) );
+        }
+        function startUpload (){
+
+            for (var i = 0, len = Z.imgUpLoad.uploadFiles.length; i < len; i++) {
+                if( !Z.imgUpLoad.uploadFiles[i] ){ continue; }
+                else { upload( Z.imgUpLoad.uploadFiles[i] ); }
+            }
+
+            function upload(file){
+                var wi = DOC.getElementById(file.zid);
+                var oe = CRE('big',{innerHTML:'准备'});
+                    wi.appendChild( oe );
+
+                var pr = CRE('progress',{value:0,max:100});
+                    // wi.appendChild( pr );
+
+                var fileData = new FormData();
+                    fileData.append('img', file);
+
+                XHR({
+                    data: fileData,
+                    onreadystatechange : function(e){ oe.innerHTML = e; },
+                    onloadstart        : function(e){ oe.innerHTML = e; },
+                    uploadOnloadstart  : function(e){ oe.innerHTML = e; wi.appendChild( pr ); },
+                    uploadOnprogress   : function(e){ pr.value = e;  },
+                    uploadOnload       : function(e){ oe.innerHTML = e; },
+                    uploadOnloadend    : function(e){ oe.innerHTML = e; },
+                    onprogress         : function(e){ oe.innerHTML = e; },
+                    onload             : function(e){ oe.innerHTML = '成功'; },
+                    onloadend          : function(e){ oe.innerHTML = e; },
+                    ontimeout          : function(e){ oe.innerHTML = e; },
+                    onerror            : function(e){ oe.innerHTML = e; }
+                });
+            }
+
+        }
+
+        function checkFormNoNull(evt){
+            console.log('checkFormNoNull',evt);
+            var eForm = evt.target.form;
+            for (var i = 0, len = eForm.length; i < len; i++) {
+                if( eForm[i].getAttribute('data-bx') == 'y' && !eForm[i].value ){
+                    Z.imgUpLoad.checkFormMustLi[eForm[i].name] = null;
+                    return false;
+                }
+                else{
+                    Z.imgUpLoad.checkFormMustLi[eForm[i].name] = eForm[i].value;
+                }
+            }
+            return true;
+        }
+    }
+
+
+    // var imgUpLoad = {
+
+    //     wrap : null,
+    //     pop: null,
+
+    //     uploadFiles : [], // 待上传文件列表
+    //     uploadFAddId : 1,
+
+    //     checkRepeatFile : [],
+    //     checkFormMustLi : [],
+
+    //     init: function(evt){ // 初始
+    //         // if( !imgUpLoad.checkFormNoNull(evt) ){
+    //         //     POP({title:'提示',content: '表单必填项是空的！'});
+    //         //     return;
+    //         // }
+    //         // else{
+    //             imgUpLoad.wrap = DOC.getElementById('imgUpLoad');
+    //             if( !imgUpLoad.wrap ){
+    //                 imgUpLoad.wrap = CRE('div', {id: 'imgUpLoad' });
+    //                 DOC.body.appendChild( imgUpLoad.wrap );
+
+    //                 imgUpLoad.pop = POP({
+    //                     title: '上传图片 - ' + imgUpLoad.checkFormMustLi['bt'],
+    //                     titleNoClose: true,
+    //                     content: imgUpLoad.wrap,
+
+    //                     otherButton: CRE('label',{ 'for':evt.id, className:'button', innerHTML:'+ 添加图片' }),
+
+    //                     selectOk: '上传图片',
+    //                     selcetNo: '放弃',
+    //                     otherFunction: null,
+    //                     okFunction: imgUpLoad.startUpload,
+    //                     noFunction: function(){}
+    //                 });
+    //             }
+
+    //             imgUpLoad.fileList(evt);
+
+    //             imgUpLoad.pop.style.top = (Z.clientHeight - imgUpLoad.pop.offsetHeight - 50) / 2 + 'px';
+    //             imgUpLoad.pop.style.left = (Z.clientWidth - imgUpLoad.pop.offsetWidth) / 2 + 'px';
+
+    //         }
+
+    //     },
+    //     fileList: function(evt){
+
+    //         var extSet = /^(image\/jpg|image\/jpeg|image\/png|image\/bmp|image\/gif)$/i; // >期待值[.jpg|.jpeg|.png|.bmp|.gif
+    //         var iId;
+    //         for (var i = 0, len = evt.files.length; i < len; i++) {
+
+
+    //             iId = 'd'+Math.round(Date.parse(new Date(evt.files[i].lastModifiedDate))+evt.files[i].size);
+
+    //             if( imgUpLoad.checkRepeatFile[iId] ){
+    //                 iId = 'o'+(++imgUpLoad.uploadFAddId)+'o'+iId;
+    //                 strHtm(iId, evt.files[i].name, '重复了');
+    //                 continue;
+    //             }
+    //             else{
+    //                 imgUpLoad.checkRepeatFile[iId] = true;
+    //                 if( !extSet.test(evt.files[i].type) ) {
+    //                     iId = 'e'+(++imgUpLoad.uploadFAddId)+'e'+iId;
+    //                     strHtm(iId, evt.files[i].name, '格式错误');
+    //                 }
+    //                 else{
+    //                     strHtm(iId, evt.files[i].name);
+    //                     checkReadFile(evt.files[i], iId, evt.files[i].name);
+    //                 }
+    //             }
+    //         }
+    //         evt.value = null;
+
+    //         function strHtm(id,name,error){
+    //             var htm = '<a title="删除" data-click="imgUpLoad" data-get="delReadyImg" data-id="'+id+'" class="icon">&#xe6bc;</a><small title="'+name+'">'+name+'</small>';
+    //             imgUpLoad.wrap.appendChild( CRE('div', {id:id, className: (error?'red':false), innerHTML:(error ? '<big>'+error+'</big>' : '')+htm }) );
+    //         }
+    //         function checkReadFile(file,id,alt){ // 检查文件
+    //             var wi = DOC.getElementById(id);
+    //             var oe = CRE('span',{className:'icon',innerHTML:'&#xe631;'});
+    //             wi.appendChild( oe );
+
+    //             zFileReader({
+    //                 F: file,
+    //                 S: function(){ oe.innerHTML = '&#xe659;'; },
+    //                 P: function(){ oe.innerHTML = '&#xe6be;'; oe.classList.add('processRotate'); },
+    //                 A: function(){ oe.innerHTML = '中断'; oe.className = 'red'; },
+    //                 E: function(){ oe.innerHTML = '异常'; oe.className = 'red'; },
+    //                 D: function(e){
+    //                         file['zid'] = id;
+    //                         file['src'] = e.target.result;
+
+    //                         imgUpLoad.uploadFiles.push(file);
+    //                         wi.replaceChild(CRE('img',{alt:alt, src: e.target.result, eddo:'mousemove', eddf:imgTipBig.init}), oe);
+    //                     }
+    //             });
+    //         }
+    //     },
+    //     delReadyImg: function(evt){
+    //         var fileId = evt.dataset.id;
+    //         for (var i = 0, len = imgUpLoad.uploadFiles.length; i < len; i++) {
+    //             if( !imgUpLoad.uploadFiles[i] ){ continue; }
+    //             else if( fileId == imgUpLoad.uploadFiles[i].zid ){
+    //                 imgUpLoad.uploadFiles[i] = null;
+    //                 imgUpLoad.wrap.removeChild( DOC.getElementById(fileId) );
+    //                 return;
+    //             }
+    //         }
+    //         imgUpLoad.wrap.removeChild( DOC.getElementById(fileId) );
+    //     },
+    //     startUpload: function(){
+
+    //         for (var i = 0, len = imgUpLoad.uploadFiles.length; i < len; i++) {
+    //             if( !imgUpLoad.uploadFiles[i] ){ continue; }
+    //             else { upload( imgUpLoad.uploadFiles[i] ); }
+    //         }
+
+    //         function upload(file){
+    //             var wi = DOC.getElementById(file.zid);
+    //             var oe = CRE('big',{innerHTML:'准备'});
+    //                 wi.appendChild( oe );
+
+    //             var pr = CRE('progress',{value:0,max:100});
+    //                 wi.appendChild( pr );
+
+    //             var fileData = new FormData();
+    //                 fileData.append('img', file);
+
+    //             zXHR({
+    //                 D: fileData,
+    //                 U: null,
+    //                 B: function(){ oe.innerHTML = '上传..'; },
+    //                 P: function(e){ pr.value = e; },
+    //                 E: function(){ oe.innerHTML = '错误'; oe.className = 'red'; },
+    //                 S: function(e){
+    //                         oe.innerHTML = '成功';
+    //                     }
+    //             });
+    //         }
+
+    //     }
+    // }
+
+// ** 编辑模式 **
+
+    ;(function () { if(!(Z.editMode = DOC.getElementById('editMode'))) return;
+
+        var directoryForm, dfOldwDo = null, dfMarginLeft = 21;
+        // 检查需要增加标题的单元
+        ;(function () {
+            // editMode.style.display = 'none';
+
+            var form = Z.editMode.firstChild;
+            var div, input;
+
+            while(form){
+                // 标准表单 title
+                if( form.tagName == 'FORM' && form.className != 'directoryForm' ){
+                    div = form.firstChild;
+                    while(div){
+                        if( div.tagName == 'DIV' ){
+                            input = div.firstChild;
+                            if( input.tagName == 'INPUT' ){
+                                input.style.paddingLeft = div.lastChild.offsetWidth + 10 + 'px';
+                            }
+                            else{
+                                input.tagName == 'TEXTAREA' && (input.style.height = input.scrollHeight + 'px');
+                                input.style.textIndent = div.lastChild.offsetWidth + 10 + 'px';
+                            }
+                        }
+                        div = div.nextSibling;
+                    }
+                }
+                // directory表单
+                else if( form.tagName == 'FORM' && form.className == 'directoryForm' ){
+                    directoryForm = form;
+                    var iMaxCC = 0;
+                    var cc, P = false;
+                    div = form.firstChild;
+                    while(div){
+                        if( div.tagName == 'P' ){
+                            P || (P = div);
+                        }
+                        else if( div.tagName == 'DIV' && div.getAttribute('data-cc') ){
+                            cc = Math.abs(div.getAttribute('data-cc'));
+                            cc > iMaxCC && (iMaxCC = cc);
+                            div.style.marginLeft = dfMarginLeft*(--cc) - 1 + 'px';
+                        }
+                        div = div.nextSibling;
+                    }
+
+                    if( iMaxCC > 0 ){
+                        var str = '  当前有'+iMaxCC+'级目录; 显示层级: ';
+                        for (var i = 1, len = iMaxCC; i <= len; i++) {
+                            str += ' <a data-click="emDirectory" data-get="CC" data-cc="'+i+'">'+i+'</a> . ';
+                        }
+                        var dirButtonACC = CRE('span',{ innerHTML:str, id:'dirButtonACC' });
+                        P.appendChild(dirButtonACC);
+                    }
+                }
+                form = form.nextSibling;
+            }
+            Z.editMode.style.display = 'block';
+        }());
+
+        // 表单事件
+        EDD({e:Z.editMode, o:'click', f:function(evt){
+            // evt.preventDefault(); // 单选按钮无法使用
+            console.log('editMode click',evt);
+            evt.stopPropagation();
+            var e = evt.target;
+            var eClick = e.getAttribute('data-click');
+            if( !eClick ){ return; }
+            else{
+                switch( eClick ){
+                    case 'emfNormalAdd': emfNormalAdd(e); break;
+                    case 'emfSubmit': emfSubmit(e); break;
+                    case 'emDirectory':
+                        e.getAttribute('data-get') == 'CC' ? eDirSwitchCC(e) : emDirectory(e);
+                        break;
+                }
+            }
+        }});
+
+        function emfSubmit(e){
+            console.log('editMode emfSubmit',e);
+            var form = DOC.getElementById(e.getAttribute('form')); if(!form) return;
+            console.log('editMode emfSubmit',e);
+            var k = e.getAttribute('form') == 'directoryForm' ? 'd' : 'n';
+            XHR({
+                data: new FormData(form),
+                get:  { g: 'e', c: k, i: {n:k, v:k } },
+                onload: function(res) {
+                    var sv = JSON.parse(res);
+                    if( sv.error ){
+                        e.style.border = '1px solid red';
+                        // POP({ selcetNo : '关闭', content: '出现错误：' + sv.error });
+                    }else{
+                        POP({title:(e.title||''),content:sv});
+                    }
+                }
+            });
+        }
+
+        EDD({e:Z.editMode, o:'focusin', f:function(evt){
+            var e = evt.target || evt.srcElement;
+            var eFocus = e.getAttribute('data-focus');
+            if( !eFocus || eFocus != 'y' ) return;
+            else{
+                // e.classList.add('now');
+                e.setAttribute('data-classIsNow',true);
+
+                var isTextarea = e.tagName == 'TEXTAREA' ? true : false;
+                if( isTextarea ){
+                    e.oninput = function(){ e.style.height = e.scrollHeight + 'px'; }// textarea'
+                }
+
+                e.onchange = function(){
+                    e.setAttribute('data-classIsEdit',true);
+                    // e.classList.add('edit');
+
+                    if( isTextarea ){
+                        e.style.height = e.scrollHeight + 'px';
+                    }
+                    else if( e.getAttribute('type') == 'file' ){
+                        imgUpLoad(evt);
+                    }
+                }
+                e.onblur = function(){
+                    // e.classList.remove('now');
+                    e.removeAttribute('data-classIsNow');
+                    isTextarea && (e.style.height = e.scrollHeight + 'px');
+                }
+                // dfOldwDo && dfOldwDo.classList.remove('now');
+                dfOldwDo && dfOldwDo.removeAttribute('data-classIsNow');
+            }
+        }});
+
+        // WIN.onbeforeunload = function(e){
+        //     POP({content:'会丢失',selectOk:'关闭'});
+        // };
+        function emfNormalAdd(evt){
+            console.log('evt',evt);
+            console.log('evt.scrollWidth',evt.offsetWidth);
+            var ePare = evt.parentNode;
+            var eForm = ePare;
+            var str;
+            var strName = ' data-focus="y" name="'+ evt.getAttribute('data-get')+'"';
+            while(eForm.tagName != 'FORM'){ eForm = eForm.parentNode; }
+            if( evt.className ){
+                if( evt.className == 'file' ){
+                    if( !Z.doFileReader ){
+                        evt.className = 'red';
+                    }
+                    else{
+                        var eForm = evt;
+                        while(eForm.tagName != 'FORM'){ eForm = eForm.parentNode; }
+                        strName += ' id="imgUpLoad_'+eForm.id+'" accept="image/jpg,image/jpeg,image/png,image/bmp,image/gif" multiple';
+                    }
+                }
+                str = '<input'+strName+' style="padding-left:'+evt.offsetWidth+'px" type="'+evt.className+'"></input>';
+            }else{
+                str = '<textarea'+strName+' style="text-indent:'+evt.offsetWidth+'px"></textarea>';
+            }
+            eForm.insertBefore(CRE('div',{ innerHTML:str+'<tt>'+evt.textContent+'</tt>' }), ePare);
+            ePare.removeChild(evt);
+        }
+
+        function eDirSwitchCC(evt){
+            var li = directoryForm.firstChild;
+            var oLi, isUl = false;
+            var getCC = evt.getAttribute('data-cc');
+
+            while(li){
+                if( li.getAttribute('data-cc') > getCC ){
+                    li.style.display = 'none';
+                    isUl == false && (isUl = true);
+                }else {
+                    li.style.display = 'block';
+                    if( li.getAttribute('data-cc') == getCC ){
+                        if( isUl ){
+                            oLi.setAttribute('data-classIsHiddenCC',true);
+                            // oLi.classList.add('hiddenCC');
+                            isUl = false;
+                        }
+                        oLi = li;
+                    }else{
+                        li.removeAttribute('data-classIsHiddenCC');
+                        // li.classList.remove('hiddenCC');
+                    }
+                }
+                li = li.nextSibling;
+            }
+            return;
+        }
+
+        function emDirectory(evt){ // 目录表单
+            var wDo, workC;
+            wDo = evt;
+            while(wDo.tagName != 'DIV'){ wDo = wDo.parentNode; }
+
+            if( !wDo.getAttribute('data-cc') ){ return; }
+            else{
+                workC = Math.abs(wDo.getAttribute('data-cc'));
+            }
+
+            wDo.setAttribute('data-classIsNow',true);
+            dfOldwDo && dfOldwDo != wDo && dfOldwDo.removeAttribute('data-classIsNow');
+            dfOldwDo = wDo;
+
+            switch (evt.getAttribute('data-get')){
+                case 'Zoom' :
+                    var el = wDo;
+                    var isStyle = false;
+                    while(el){
+                        el = el.nextSibling;
+                        if( el.getAttribute('data-cc') <= workC ){ break; }
+                        else{
+                            el.style.display = el.style.display == 'none' ? 'block' : 'none';
+                            !isStyle && (isStyle = true);
+                        }
+                    }
+                    isStyle ? wDo.setAttribute('data-classIsHiddenCC') : POP({content:'没有下级',selcetNo:'关闭'});
+                    return;
+                case 'Right' :
+                    ++workC;
+                    var wPre = wDo.previousSibling;
+                    if( !wPre || workC - wPre.getAttribute('data-cc') > 1 ){ POP({content:'不能再移动，上级间距1',selcetNo:'关闭'}); }
+                    else{
+                        wDo.style.marginLeft = dfMarginLeft*(workC-1) - 1 + 'px';
+                        wDo.setAttribute('data-cc',workC);
+                        var input = wDo.firstChild;
+                        while(input){
+                            if( input.tagName == 'INPUT' && DAS(input,'key') == '[cc]' ){
+                                input.setAttribute('value',workC);
+                                break;
+                            }
+                            input = input.nextSibling;
+                        }
+                        wDo.setAttribute('data-classIsEdit',true);
+                        // wDo.classList.add('edit');
+                    }
+                    return;
+                case 'Left' :
+                    --workC;
+                    if( workC < 1 ){ POP({ content:'不能再移动', selcetNo:'关闭'}); }
+                    else{
+                        wDo.style.marginLeft = dfMarginLeft*(workC-1) - 1 + 'px';
+                        wDo.setAttribute('data-cc',workC);
+                        var input = wDo.firstChild;
+                        while(input){
+                            if( input.tagName == 'INPUT' && DAS(input,'key') == '[cc]' ){
+                                input.setAttribute('value',workC);
+                                break;
+                            }
+                            input = input.nextSibling;
+                        }
+                        wDo.setAttribute('data-classIsEdit',true);
+                        // wDo.classList.add('edit');
+                    }
+                    return;
+                case 'Up' :
+                    var thatDo = wDo.previousSibling;
+                    if(!thatDo || thatDo.tagName != 'DIV'){ POP({content:'不能再移动',selcetNo:'关闭'}); }
+                    else{
+                        directoryForm.insertBefore(wDo,thatDo);
+                        // wDo.classList.add('edit');
+                        wDo.setAttribute('data-classIsEdit',true);
+                    }
+                    return;
+                case 'Down' :
+                    var thatDo = wDo.nextSibling;
+                    if(!thatDo || thatDo.tagName != 'DIV'){ POP({content:'不能再移动',selcetNo:'关闭'}); }
+                    else{
+                        directoryForm.insertBefore(thatDo ,wDo);
+                        wDo.setAttribute('data-classIsEdit',true);
+                        // wDo.classList.add('edit');
+                    }
+                    return;
+                case 'Add' :
+                    var newDo = wDo.cloneNode(true);
+                    newDo.style.marginLeft = dfMarginLeft*workC - 1 + 'px';
+                    ++workC;
+                    var newDi = directoryForm.getAttribute('data-maxdi');
+                    ++newDi;
+                    // newDo.classList.add('edit');
+                    newDo.setAttribute('data-classIsEdit',true);
+                    newDo.setAttribute('data-cz', 'add');
+                    newDo.setAttribute('data-di', newDi);
+                    newDo.setAttribute('data-cc', workC);
+
+                    var newName = 'add' + addNumber();
+                    var iKey;
+                    var input = newDo.firstChild;
+                    while(input){
+                        if( input.tagName == 'INPUT' ){
+                            iKey = input.getAttribute('data-key');
+                            input.setAttribute('name', newName + iKey);
+                            iKey == '[cc]' && (input.setAttribute('value',workC));
+                            iKey == '[bt]' && (input.setAttribute('value',''));
+                            iKey == '[di]' && (input.setAttribute('value',newDi));
+                        }
+                        else if( input.tagName == 'SPAN' ){
+                            var delA = input.firstChild;
+                            while(delA){
+                                if( delA.tagName == 'A' && delA.getAttribute('data-get') == 'Http' ){
+                                    delA.href = location.pathname.replace('/index.','/add.'+newDi+'.');
+                                    break;
+                                }
+                                delA = delA.nextSibling;
+                            }
+                        }
+                        input = input.nextSibling;
+                    }
+
+                    if( wDo.nextSibling ){ directoryForm.insertBefore(newDo, wDo.nextSibling); }
+                    else{ directoryForm.appendChild(newDo); }
+                    directoryForm.setAttribute('data-maxdi',newDi);
+
+                    return;
+                case 'Del' :
+                    var cz = wDo.getAttribute('data-cz') == 'add' ? 'delAd' : 'delOld';
+                    wDo.setAttribute('data-cz', cz );
+                    var oldName,newName;
+                    var input = wDo.firstChild;
+                    while(input){
+                        if( input.tagName == 'INPUT' ){
+                            oldName = input.getAttribute('name');
+                            newName = cz == 'delAd' ? oldName.replace('add','delAd') : 'delOld'+oldName;
+                            input.setAttribute('name', newName);
+                            input.getAttribute('data-key') == '[bt]' && input.setAttribute('data-classIsDel'); // classList.add('del');
+                        }
+                        else if( input.tagName == 'SPAN' ){
+                            var delA = input.firstChild;
+                            while(delA){
+                                if( delA.tagName == 'A' ){
+                                    delA.style.display = delA.getAttribute('data-get') == 'Regain' ? 'inline' : 'none';
+                                }
+                                delA = delA.nextSibling;
+                            }
+                        }
+                        input = input.nextSibling;
+                    }
+                    // wDo.classList.add('edit');
+                    wDo.setAttribute('data-classIsEdit',true);
+                    return;
+
+                case 'Regain' :
+                    var cz = wDo.getAttribute('data-cz') == 'delAd' ? 'add' : '';
+                    wDo.setAttribute('data-cz', cz );
+                    var oldName,newName;
+                    var input = wDo.firstChild;
+                    while(input){
+                        if( input.tagName == 'INPUT' ){
+                            oldName = input.getAttribute('name');
+                            newName = cz == 'add' ? oldName.replace('delAd','add') : oldName.replace('delOld','');
+                            input.setAttribute('name', newName);
+                            input.getAttribute('data-key') == '[bt]' && input.removeAttribute('data-classIsDel'); //input.classList.remove('del');
+                        }
+                        else if( input.tagName == 'SPAN' ){
+                            var delA = input.firstChild;
+                            while(delA){
+                                if( delA.tagName == 'A' ){
+                                    delA.style.display = delA.getAttribute('data-get') == 'Regain' ? 'none' : 'inline';
+                                }
+                                delA = delA.nextSibling;
+                            }
+                        }
+                        input = input.nextSibling;
+                    }
+                    // wDo.classList.add('edit');
+                    wDo.setAttribute('data-classIsEdit',true);
+                    return;
+            }
+        }
+    }());
+
+
+// ** 页面部件 **
+    // 页面内文字标记
+    function signTextClick(e){
+        var tNum = parseInt(e.title);
+        var tId = e.id.slice(2);
+
+        var tMark = DOC.getElementById(tId+tNum);
+        tMark.setAttribute('data-classIsNow',true);
+        // tMark.classList.add('now');
+        hashClassTip(tMark);
+        var tMarkTop = getFixedOffsetTopLeft(tMark).top;
+        (tMarkTop < Z.scrollTop || tMarkTop > Z.scrollTop+Z.clientHeight) && WIN.scrollTo(0, getFixedOffsetTopLeft(tMark).top - 100);
+
+        var countSpan = DOC.getElementById('c_'+tId);
+        var countNum = parseInt(countSpan.title);
+
+        countSpan.innerHTML = tNum+'/'+countNum;
+        DOC.getElementById('p_'+tId).title = tNum-1 < 1 ? 1 : tNum-1;
+        DOC.getElementById('n_'+tId).title = tNum+1 > countNum ? countNum : tNum+1;
+
+        var prevId = countSpan.getAttribute('data-get');
+        prevId && DOC.getElementById(prevId).removeAttribute('data-classIsNow');
+        countSpan.setAttribute('data-get',tId+tNum);
+    }
+    function signText(e){
+        if( Z.editMode ){
+            POP({content:'<ul><li>编辑模式下 不能用。</li><li>可以 ctrl + f 进行页内查找定位。</li><li>太多错误。解决不了...</li></ul>',selcetNo:'确定'});
+            return;
+        }
+        var searchKeyWord,kWord;
+        if( !e ){
+            searchKeyWord = DOC.getElementById('searchKeyWord');
+            if( !searchKeyWord.value ) return;
+            kWord = searchKeyWord.value
+            searchKeyWord.value = '';
+        }
+        else{
+            kWord = e;
+        }
+
+        if( !kWord ) return;
+
+
+        Z.signTextNumber = Z.signTextNumber ? ++Z.signTextNumber : 1;
+        var backgroundColor = ['y', 'r', 'g', 'f', 'n', 'o', 'b', 'm', 'p', 'd'];
+
+        var sNum = Z.signTextNumber;
+        var sCount = 0;
+        var kBack = backgroundColor[sNum];
+
+        var sFirstTop = 110;
+        var sSecondTop = Z.clientHeight*0.3;
+        var sNowNum = 0;
+
+        //scrollTop scrollHeight
+        searchText( DOC.getElementById('main') );
+        return sCount > 0 ? searchResult() : POP({content:'没找到！',selcetNo:'确定'});
+
+        // hashchange 没找到
+        function searchResult(){
+
+            var stResult = CRE('div',{
+                                className:'stResult '+kBack,
+                                innerHTML:
+                                        '<span class="stWord">'+kWord+'</span>'+
+                                        '<span class="stCount" id="c_signText_'+sNum+'_" title="'+sCount+'" data-get="signText_'+sNum+'_'+sNowNum+'">'+sNowNum+'/'+sCount+'</span>'+
+                                        '<a class="icon prev" id="p_signText_'+sNum+'_" title="'+(sNowNum>1?sNowNum-1:1)+'" data-click="signTextClick">&#xe676;</a>'+
+                                        '<a class="icon next" id="n_signText_'+sNum+'_" title="'+(sNowNum<sCount?sNowNum+1:sCount)+'" data-click="signTextClick">&#xe67b;</a>'
+                            });
+
+            var signWrap = DOC.getElementById(Z.signWrapBasisId);
+            if( !signWrap ){
+                signWrap = CRE('div',{id:Z.signWrapBasisId});
+                signWrap.style.zIndex = Z.signWrapZIndex;
+                DOC.body.appendChild(signWrap);
+                mouseMove(signWrap);
+            }
+            signWrap.appendChild(stResult);
+            sNowNum && DOC.getElementById('signText_'+sNum+'_'+sNowNum).setAttribute('data-classIsNow',true);//classList.add('now');
+        }
+        //
+        function jumpTag(e){
+            return (
+                    /^\s+$/.test(e.nodeValue)
+                    ||  (e.nodeType != 1 && e.nodeType != 3)
+                    || e.id == 'breadcrumb' || e.id == 'filterNav'
+                    || e.id == 'prevNext' || e.id == 'tabNav' || e.id == 'tabResult' || e.id == 'tabFirst'
+                    || e.tagName == 'MARK' || e.tagName == 'IMG' || e.tagName == 'SUB'  || e.tagName == 'SUP'
+                    )
+                    ? true : false;
+        }
+        function searchText(node){
+            node = node.firstChild;
+            do{
+                if( jumpTag(node) ){ continue; }
+                else{
+                    sFirstTop = sFirstTop + node.offsetTop;
+                    newChildHtml(node);
+
+                }
+            }while( node = node.nextSibling );
+        }
+
+        function newChildHtml(node){
+            var findWork = false;
+            var child = node.firstChild;
+            do{
+                if( jumpTag(child) ){
+                    continue;
+                }
+                else if( child.nodeType == 1 ){
+                    sFirstTop = sFirstTop + child.offsetTop;
+                    newChildHtml(child);
+                }
+                else if( child.nodeType == 3 && child.nodeValue.indexOf(kWord) !== -1 ){
+                    child.textContent = wordReplace(child);
+                    findWork = true;
+                }
+
+            }while( child = child.nextSibling );
+
+            if( findWork ){
+                if( sNowNum == 0 && sFirstTop > Z.scrollTop ){
+                    sNowNum = sCount;
+                    sSecondTop = sSecondTop + sFirstTop;
+                }
+                else if( sSecondTop && sNowNum > 0 && sSecondTop > Z.scrollTop ){
+                    sNowNum = sCount;
+                    sSecondTop = false;
+                }
+                node.innerHTML = node.innerHTML.replace(/{{mm}}|{{kk}}/g, function(ma){ return ma == '{{mm}}' ? '<' : '>'; } );
+            }
+        }
+
+        function wordReplace(node){
+            var findkey = node.nodeValue.split(kWord);
+            var nodehtml = '';
+            for (var j = 0, jlen = findkey.length; j < jlen; j++) {
+                nodehtml += findkey[j];
+                if(j+1 == jlen ) break;
+                sCount++;
+                nodehtml += '{{mm}}mark id="signText_'+sNum+'_'+sCount+'" class="signText '+kBack+'"{{kk}}'+kWord+'{{mm}}/mark{{kk}}';
+            }
+            return nodehtml;
+        }
+
+    }
+
+// ** 弹窗 **
+    function popCloseGroup(e,zid){
+        // console.log(e,zid,Z.popBasisId,DOC.getElementById((zid||e.getAttribute('data-get'))),DOC.getElementById(Z.popBasisId));
+        var id = zid ? zid : e.getAttribute('data-get');
+        DOC.getElementById(Z.popBasisId).removeChild(DOC.getElementById(id));
+    }
+    function POP(opt) { opt = opt || {};
+
+        var basis = DOC.getElementById(Z.popBasisId);
+        if(!basis){
+            basis = CRE('div',{ id: Z.popBasisId });
+            DOC.body.appendChild(basis);
+        }
+
+        var zid = Z.popZIndex+basis.childNodes.length; // +'-'+Math.random()
+        var gid = 'popGroup'+zid;
+
+        var group = CRE('div',{
+                            id        :gid,
+                            className :'group',
+                            CRE       : [( opt.noBackground || CRE('div',{
+                                                            className : 'background',
+                                                            style     : { zIndex: zid+1 },
+                                                            dataClick : ( opt.noBlackClickClose || 'popCloseGroup' ),
+                                                            dataGet   : ( opt.noBlackClickClose || gid ),
+                                                        })
+                                        )]
+                        });
+        basis.appendChild(group);
+
+        // 项目
+        var fixed = CRE('div', {
+                            className : 'fixed',
+                            style     : {zIndex:zid+2},
+                            cfun      : (opt.noMouserMove || mouseMove)
+                    });
+
+        // if( opt.loading ){
+        //     fixed.classList.add('loading');
+        // }
+        // else{
+
+            opt.title && fixed.appendChild(
+                                CRE('div',{className:'top',
+                                    CRE: [
+                                            CRE('span',{ innerHTML: opt.title }),
+                                            CRE('a',{
+                                                        className :'icon',
+                                                        innerHTML :'&#xe6bc;',
+                                                        dataClick :'popCloseGroup',
+                                                        dataGet   :gid,
+                                                        eddf      : function(){
+                                                                        opt.noFunction && opt.noFunction();
+                                                                    }
+                                                    })
+                                         ]
+                                })
+                        );
+
+            fixed.appendChild(
+                    CRE('div',{
+                        className : 'content',
+                        style     : { width:(opt.width||'auto'), height:(opt.height||'auto'), maxWidth: Z.maxWidth+'px', maxHeight: Z.maxHeight+'px' },
+                        cfun      : ( opt.onMouserResize && mouseResize),
+                        innerHTML : ( opt.content && typeof opt.content == 'string' && opt.content ),
+                        CRE       : [ ( opt.content && typeof opt.content == 'object' && opt.content ) ]
+                    })
+            );
+
+            ( opt.selectOk || opt.selcetNo || opt.otherButton ) && fixed.appendChild(
+                    CRE('div', {className:'down',
+                        CRE : [
+                                ( opt.otherButton && typeof opt.content == 'object' && opt.otherButton ),
+                                ( opt.selectOk && CRE('a', {
+                                                        className   : 'button',
+                                                        textContent : (opt.selectOk||'确定'),
+                                                        dataClick   : ( opt.closeGroup && 'popCloseGroup' ),
+                                                        dataGet     : gid,
+                                                        eddf        : function(){
+                                                                            opt.reload     && window.location.reload();
+                                                                            opt.okFunction && opt.okFunction();
+                                                                        }
+                                                    })
+                                    ),
+                                ( opt.selcetNo && CRE('a', {
+                                                        className   : 'button',
+                                                        textContent : (opt.selcetNo||'取消'),
+                                                        dataClick   : 'popCloseGroup',
+                                                        dataGet     : gid,
+                                                        eddf        : function(){
+                                                                            opt.noFunction && opt.noFunction();
+                                                                        }
+                                                    })
+                                    )
+                            ]
+                    })
+                );
+        // }
+        group.appendChild(fixed);
+        // basis.appendChild(group);
+
+        fixed.style.top = (Z.clientHeight - fixed.offsetHeight - 50) / 2 + 'px';
+        fixed.style.left = (Z.clientWidth - fixed.offsetWidth) / 2 + 'px';
+
+        opt.autoClose && setTimeout(popCloseGroup(null,gid), (opt.time || 10000));
+
+        return fixed;
+    }
+    // 拖拽
+    function mouseMove(obj) {
+        obj.style.cursor = 'move';
+        EDD({ e:obj, o:Z.mousedown, f:function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
+            var objXY = getFixedOffsetTopLeft(obj);
+
+            e = Z.mouseXY(e);
+            var moX = e.clientX - objXY.left;
+            var moY = e.clientY - objXY.top;
+
+            EDD({ e:DOC, o:Z.mousemove, f:move });
+            EDD({ e:DOC, o:Z.mouseup, f:function(){ ERD( {e:DOC, o:Z.mousemove, f:move} );} });
+            return false;
+
+            function move(e){
+                e = Z.mouseXY(e);
+                obj.style.left = e.clientX - moX + 'px';
+                obj.style.top = e.clientY - moY + 'px';
+            }
+        }});
+    }
+
+    // 改变大小
+    function mouseResize(obj){ if (Z.isIpad ) return;
+        var mTip = CRE('span',{className:'resizeIcon'});
+        obj.appendChild( mTip );
+
+        EDD({ e:mTip, o:'mousedown', f:function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
+            var objW = obj.clientWidth;
+            var objH = obj.clientHeight;
+
+            e = Z.mouseXY(e);
+            var moX = e.clientX;
+            var moY = e.clientY;
+
+            EDD({ e:DOC, o:'mousemove', f:resize });
+            EDD({ e:DOC, o:'mouseup', f:function(){ ERD({ e:DOC, o:Z.mousemove, f:resize });} });
+            return false;
+
+            function resize(e){
+                e = Z.mouseXY(e);
+                if( e.clientX >= Z.clientWidth - 15 || e.clientY >= Z.clientHeight - 15 ) return;
+                obj.style.width = objW + e.clientX - moX + 'px';
+                obj.style.height = objH + e.clientY - moY + 'px';
+            }
+        }});
+
+    }
+
+// ** 函数 **
+    // 自增
+    var addNumber = (function(){var i=-1;return function(){return(++i);}})();
+    // 加载
+    // function processRotate(){
+    //     return '<div class="process rotate"><i class="icon">&#xe6be;</i></div>';
+    // }
+    //功能: 在targetElement之后插入 新节点newElement
+    // parentNode.insertBefore
+    function insertAfter(newElement, targetElement){
+        var parent = targetElement.parentNode;
+        if(parent.lastChild == targetElement){
+            parent.appendChild(newElement);
+        }else{
+            parent.insertBefore(newElement,targetElement.nextSibling);
+        }
+    }
+
+    // 计算 node 对象位置  getFixedOffsetTopLeft
+    function getFixedOffsetTopLeft(element) {
+        var get = {};
+            get.top = element.offsetTop;
+            get.left = element.offsetLeft;
+
+        var current = element.offsetParent;
+        while (current !== null){
+            get.top += current.offsetTop;
+            get.left += current.offsetLeft;
+            current = current.offsetParent;
+        }
+        return get; //向上累加offset里的值
+    }
+    // 获取cookie
+    function getCookie(n) {
+        if( DOC.cookie.length <= 0 ) return null;
+
+        var c_start = DOC.cookie.indexOf(n + '=');
+        if( c_start > 0 ){
+            c_start = c_start + n.length+1
+            var c_end = DOC.cookie.indexOf(';', c_start);
+            c_end = c_end > 0 ? c_end : DOC.cookie.length;
+            return unescape(DOC.cookie.substring(c_start,c_end))
+        }
+        return null;
+    }
+    // 设置cookie
+    function setCookie(n,v,t){
+        var exdate = new Date();
+        exdate.setDate( exdate.getDate() + (t || 1) );
+        DOC.cookie = n+'='+encodeURIComponent(v)+';path=/;domain='+location.hostname+';expires='+exdate.toGMTString();
+    }
+
+    function hashClassTip(e){
+        e = e ? (typeof e === 'string' ? DOC.getElementById(e) : e)
+              : DOC.getElementById( WIN.location.hash.slice(1) );
+        if( !e ){
+            return;
+        }
+        else{
+            // e.classList.add('hashNow');
+            e.setAttribute('data-classIsHash',true)
+            setTimeout(function(){ e.removeAttribute('data-classIsHash'); }, 2000);
+        }
+    }
+
+    //
+    (!Z.cookieZc || !Z.cookieZn || !Z.cookieZt) && teamLoginCheck();
+}(window));
+
+// ** baidu 分享 **
+// window._bd_share_config = { "common": {"bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdPic": "", "bdStyle": "0", "bdSize": "16"}, "share": {} };with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion=' + ~(-new Date() / 36e5)];
